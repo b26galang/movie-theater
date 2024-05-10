@@ -1,5 +1,6 @@
 const express = require('express');
 const Router = express.Router();
+const { validateShowTitle, validateUserEmail } = require('../validationRules');
 
 const {
     getShows,
@@ -11,16 +12,16 @@ const {
 } = require('../controllers/showController');
 
 // get all shows
-Router.get('/', getShows);
+Router.get('/', [validateShowTitle()], getShows);
 
 // get show by genre
-Router.get('/genre', getShowsByGenre);
+Router.get('/genre', [validateShowTitle()], getShowsByGenre);
 
 // get show by id
-Router.get('/:showId', getOneShow);
+Router.get('/:showId',[validateShowTitle()], getOneShow);
 
 // get user who watched show
-Router.get('/:showId/users', getAllUsersWhoWatchedShow);
+Router.get('/:showId/users', [validateUserEmail()], getAllUsersWhoWatchedShow);
 
 // update the available property of show
 Router.put('/:showId', updateAvailablePropertyOfShow);
