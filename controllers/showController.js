@@ -1,4 +1,4 @@
-const { Show, User } = require('../models/index');
+const { Show } = require('../models/index');
 
 // get all shows
 const getShows = async (req, res) => {
@@ -26,13 +26,14 @@ const getOneShow = async (req, res) => {
 }
 
 // get show(s) by particular genre
-//fix
-const getShowByGenre = async (req, res) => {
+const getShowsByGenre = async (req, res) => {
     try {
-        const showGenre = req.params.genre;
-        const show = await Show.findAll({ where: { genre: showGenre}});
-        if (show) {
-            res.status(200).json(show);
+        const showGenre = req.query.genre;
+        const shows = await Show.findAll({ where: { genre: showGenre} });
+        if (shows.length > 0) {
+            res.status(200).json(shows);
+        } else {
+            res.status(404).send("No shows found of that genre.");
         }
     } catch (error) {
         res.status(500).send("Error getting show(s) by genre: " + error);
@@ -40,17 +41,16 @@ const getShowByGenre = async (req, res) => {
 }
 
 // get user who watched show
-// retrieve the show
-// find the userId associated with the show in watched table
-// fix
 const getAllUsersWhoWatchedShow = async (req, res) => {
     try {
         const showId = req.params.showId;
         const show = await Show.findByPk(showId);
-        // const user = 
-        // if (show && apprentice) {
-        //    res.status(200).json(user);
-        // }
+
+        if (show) {
+            const users = await show.getUsers();
+            res.status(200).json(users);
+        }
+
     } catch (error) {
         res.status(500).send("Error getting all users who watched show: " + error);
     }
@@ -88,7 +88,7 @@ const deleteShow = async (req, res) => {
 module.exports = {
     getShows,
     getOneShow,
-    getShowByGenre,
+    getShowsByGenre,
     getAllUsersWhoWatchedShow,
     updateAvailablePropertyOfShow,
     deleteShow

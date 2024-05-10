@@ -4,21 +4,20 @@ const Router = express.Router();
 const {
     getShows,
     getOneShow,
-    getShowByGenre,
+    getShowsByGenre,
     getAllUsersWhoWatchedShow,
     updateAvailablePropertyOfShow,
-    deleteShow,
-
+    deleteShow
 } = require('../controllers/showController');
 
 // get all shows
 Router.get('/', getShows);
 
+// get show by genre
+Router.get('/genre', getShowsByGenre);
+
 // get show by id
 Router.get('/:showId', getOneShow);
-
-// get show by genre
-Router.get('/:genre', getShowByGenre);
 
 // get user who watched show
 Router.get('/:showId/users', getAllUsersWhoWatchedShow);
