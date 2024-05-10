@@ -26,11 +26,15 @@ const getOneUser = async (req, res) => {
 }
 
 // get all shows watched by a user 
-// fix
 const getAllShowsWatchedByUser = async (req, res) => {
     try { 
         const userId = req.params.userId;
-        const user = findByPk(userId);
+        const user = await User.findByPk(userId);
+
+        if (user) {
+            const shows = await user.getShows();
+            res.status(200).json(shows);
+        }
 
     } catch (error) {
         res.status(500).send("Error getting all shows watched by a user " + error);
@@ -38,16 +42,15 @@ const getAllShowsWatchedByUser = async (req, res) => {
 }
 
 // associate a user with a show they have watched
-//fix
 const associateUserWithShow = async (req, res) => {
     try { 
         const userId = req.params.userId;
         const showId = req.params.showId;
-        const user = User.findByPk(userId);
-        const show = Show.findByPk(showId);
+        const user = await User.findByPk(userId);
+        const show = await Show.findByPk(showId);
         if (show && user) {
-            // await show.addUser(user);
-            res.status("User has been successfully associated with a show they have watched!");
+            await user.addShow(show);
+            res.send("User has been successfully associated with a show they have watched!");
         }
     } catch (error) {
         res.status(500).send("Error associating user with a show they have watched " + error);
