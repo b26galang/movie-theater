@@ -40,19 +40,34 @@ const getShowsByGenre = async (req, res) => {
     }
 }
 
-// get user who watched show
-const getAllUsersWhoWatchedShow = async (req, res) => {
+// get all shows watched by a user 
+const getAllShowsWatchedByUser = async (req, res) => {
     try {
-        const showId = req.params.showId;
-        const show = await Show.findByPk(showId);
+        const userId = req.params.userId;
+        const user = await User.findByPk(userId);
 
-        if (show) {
-            const users = await show.getUsers();
-            res.status(200).json(users);
+        if (user) {
+            const shows = await user.getShows();
+            res.status(200).json(shows);
         }
 
     } catch (error) {
-        res.status(500).send("Error getting all users who watched show: " + error);
+        res.status(500).send("Error getting all shows watched by a user: " + error);
+    }
+}
+
+// update the rating of a show
+const updateShowRating = async (req, res) => {
+    try {
+        const showId = req.params.showId;
+        const show = await Show.findByPk(showId);
+        const showRating = req.body;
+        if (show) {
+            await show.update(showRating);
+            res.status(200).json(show);
+        }
+    } catch (error) {
+        res.status(500).send("Error updating the rating of a show: " + error);
     }
 }
 
@@ -68,6 +83,21 @@ const updateAvailablePropertyOfShow = async (req, res) => {
         }
     } catch (error) {
         res.status(500).send("Error updating the available property of show: " + error);
+    }
+}
+
+// update the title of a show
+const updateShowTitle = async (req, res) => {
+    try {
+        const showId = req.params.showId;
+        const show = await Show.findByPk(showId);
+        const showTitle = req.body;
+        if (show) {
+            await show.update(showTitle);
+            res.status(200).json(show);
+        }
+    } catch (error) {
+        res.status(500).send("Error updating the title of a show: " + error);
     }
 }
 
@@ -89,7 +119,9 @@ module.exports = {
     getShows,
     getOneShow,
     getShowsByGenre,
-    getAllUsersWhoWatchedShow,
+    getAllShowsWatchedByUser,
     updateAvailablePropertyOfShow,
-    deleteShow
+    updateShowRating,
+    updateShowTitle,
+    deleteShow,
 }
