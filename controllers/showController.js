@@ -1,4 +1,24 @@
 const { Show } = require('../models/index');
+const { check, validationResult } = require('express-validator');
+
+// validation rules:
+
+// check if show title is less than 25 characters
+// fix
+const titleMaxLength = 25;
+const validateShowTitle = () => {
+    return check('title').isLength({ max: titleMaxLength }).withMessage(`The title of a show cannot exceed ${titleMaxLength} characters`);
+}
+
+// check if status field is empty or contains white space and has a minimum of 5 characters and a maximum of 25 characters
+const validateShowStatus = () => {
+
+}
+
+// check if rating field is empty or contains white space
+const validateShowRating = () => {
+
+}
 
 // get all shows
 const getShows = async (req, res) => {
@@ -92,6 +112,10 @@ const updateShowTitle = async (req, res) => {
         const showId = req.params.showId;
         const show = await Show.findByPk(showId);
         const showTitle = req.body;
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
         if (show) {
             await show.update(showTitle);
             res.status(200).json(show);
@@ -116,6 +140,9 @@ const deleteShow = async (req, res) => {
 }
 
 module.exports = {
+    validateShowTitle,
+    validateShowStatus,
+    validateShowRating,
     getShows,
     getOneShow,
     getShowsByGenre,

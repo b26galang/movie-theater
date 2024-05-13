@@ -1,8 +1,11 @@
 const express = require('express');
 const Router = express.Router();
-const { validateShowTitle, validateUsername } = require('../validationRules');
 
 const {
+    validateUsername,
+    validateShowTitle,
+    validateShowStatus,
+    validateShowRating,
     getShows,
     getOneShow,
     getShowsByGenre,
@@ -29,7 +32,7 @@ Router.get('/:showId/users', getAllShowsWatchedByUser);
 Router.put('/:showId/rating', updateShowRating);
 
 // update show title
-Router.put('/:showId/title', updateShowTitle);
+Router.put('/:showId/title', validateShowTitle, updateShowTitle);
 
 // update the available property of show
 Router.put('/:showId', updateAvailablePropertyOfShow);
