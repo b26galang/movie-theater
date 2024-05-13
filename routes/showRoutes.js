@@ -2,9 +2,7 @@ const express = require('express');
 const Router = express.Router();
 
 const {
-    validateUsername,
     validateShowTitle,
-    validateShowStatus,
     validateShowRating,
     getShows,
     getOneShow,
@@ -29,7 +27,7 @@ Router.get('/:showId', getOneShow);
 Router.get('/:showId/users', getAllShowsWatchedByUser);
 
 // update show rating
-Router.put('/:showId/rating', updateShowRating);
+Router.put('/:showId/rating', validateShowRating, updateShowRating);
 
 // update show title
 Router.put('/:showId/title', validateShowTitle, updateShowTitle);

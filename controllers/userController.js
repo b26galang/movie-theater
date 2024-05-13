@@ -1,14 +1,12 @@
 const { Show, User } = require('../models/index');
-const { check, validationResult } = require('express-validator');
+const { body, validationResult } = require('express-validator');
 
 // validation rule(s):
 
 // validate that the username is an email
 const validateUsername = [
-    check('email').isEmail().withMessage("Username must be an email address")
-]
-
-
+    body('username').isEmail().withMessage("Username must be an email address")
+];
 
 // get all users
 const getUsers = async (req, res) => {
@@ -34,7 +32,6 @@ const getOneUser = async (req, res) => {
         res.status(500).send("Error getting user by id: " + error);
     }
 }
-
 
 
 // get user who watched show
@@ -74,21 +71,19 @@ const updateUserUsername = async (req, res) => {
     try {
         const userId = req.params.userId;
         const user = await User.findByPk(userId);
-        const newUsername = req.body;
+        const { username } = req.body;
 
-        // check for validation errors
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({ errors: errors.array() });
         }
         if (user) {
-            await user.update(newUsername);
+            await user.update({ username: username });
             res.status(200).json(user);
         }
     } catch (error) {
         res.status(500).send("Error updating username: " + error)
     }
-
 }
 
 module.exports = {

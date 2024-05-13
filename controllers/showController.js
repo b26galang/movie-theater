@@ -1,24 +1,29 @@
 const { Show } = require('../models/index');
-const { check, validationResult } = require('express-validator');
+const { validationResult, body } = require('express-validator');
 
 // validation rules:
 
 // check if show title is less than 25 characters
-// fix
 const titleMaxLength = 25;
-const validateShowTitle = () => {
-    return check('title').isLength({ max: titleMaxLength }).withMessage(`The title of a show cannot exceed ${titleMaxLength} characters`);
-}
-
-// check if status field is empty or contains white space and has a minimum of 5 characters and a maximum of 25 characters
-const validateShowStatus = () => {
-
-}
+const validateShowTitle = [
+    body('title').custom(title => {
+        if(title.length > titleMaxLength) {
+            throw new Error (`The title of a show cannot exceed ${titleMaxLength} characters.`);
+        }
+        return true;
+    })
+];
 
 // check if rating field is empty or contains white space
-const validateShowRating = () => {
-
-}
+const validateShowRating = [
+    // check if empty or white space
+    body('rating').custom(rating => {
+        if(!rating || /^\s*$/.test(rating)) {
+            throw new Error("Show rating field cannot be empty");
+        }
+        return true;
+    })
+];
 
 // get all shows
 const getShows = async (req, res) => {
@@ -81,9 +86,15 @@ const updateShowRating = async (req, res) => {
     try {
         const showId = req.params.showId;
         const show = await Show.findByPk(showId);
-        const showRating = req.body;
+        const { rating } = req.body;
+        
+        // check for validation errors
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
         if (show) {
-            await show.update(showRating);
+            await show.update({ rating: rating });
             res.status(200).json(show);
         }
     } catch (error) {
@@ -111,13 +122,14 @@ const updateShowTitle = async (req, res) => {
     try {
         const showId = req.params.showId;
         const show = await Show.findByPk(showId);
-        const showTitle = req.body;
+        const { title } = req.body;
+
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({ errors: errors.array() });
         }
         if (show) {
-            await show.update(showTitle);
+            await show.update({ title: title });
             res.status(200).json(show);
         }
     } catch (error) {
@@ -141,7 +153,6 @@ const deleteShow = async (req, res) => {
 
 module.exports = {
     validateShowTitle,
-    validateShowStatus,
     validateShowRating,
     getShows,
     getOneShow,
