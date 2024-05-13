@@ -1,13 +1,13 @@
 const express = require('express');
 const Router = express.Router();
-const { validateUsername, validateShowTitle } = require('../validationRules');
 
 const {
     getUsers,
     getOneUser,
     getAllUsersWhoWatchedShow,
     associateUserWithShow,
-    updateUsername
+    validateUsername,
+    updateUserUsername
 } = require('../controllers/userController')
 
 // get all users
@@ -23,6 +23,6 @@ Router.get('/:userId/shows', getAllUsersWhoWatchedShow);
 Router.put('/:userId/shows/:showId', associateUserWithShow);
 
 // update username
-Router.put('/:userId', updateUsername);
+Router.put('/:userId', validateUsername, updateUserUsername);
 
 module.exports = Router;

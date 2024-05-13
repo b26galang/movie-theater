@@ -1,4 +1,14 @@
 const { Show, User } = require('../models/index');
+const { check, validationResult } = require('express-validator');
+
+// validation rule(s):
+
+// validate that the username is an email
+const validateUsername = [
+    check('email').isEmail().withMessage("Username must be an email address")
+]
+
+
 
 // get all users
 const getUsers = async (req, res) => {
@@ -60,11 +70,17 @@ const associateUserWithShow = async (req, res) => {
 }
 
 // update username
-const updateUsername = async (req, res) => {
+const updateUserUsername = async (req, res) => {
     try {
         const userId = req.params.userId;
         const user = await User.findByPk(userId);
         const newUsername = req.body;
+
+        // check for validation errors
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
         if (user) {
             await user.update(newUsername);
             res.status(200).json(user);
@@ -80,5 +96,6 @@ module.exports = {
     getOneUser,
     getAllUsersWhoWatchedShow,
     associateUserWithShow,
-    updateUsername
+    validateUsername,
+    updateUserUsername
 }
